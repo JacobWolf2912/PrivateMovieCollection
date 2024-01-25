@@ -2,8 +2,13 @@ package com.privatemoviecollection.ui.controllers;
 
 import com.privatemoviecollection.be.Category;
 import com.privatemoviecollection.be.Movie;
+import com.privatemoviecollection.bll.CategoryManager;
 import com.privatemoviecollection.bll.MovieManager;
 import com.privatemoviecollection.ui.HelloApplication;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,22 +20,25 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable
 {
     public Button categoryDeleteButton;
-    public Button songsInCategoryDeleteButton;
     public Button movieNewButton;
     @FXML
-    public TableView<Category> playlistsTableView;
-    @FXML
-    public Button moveSongToPlaylistButton;
-    public TableColumn totalTimeColumn;
+    public TableView<Category> categoryTableView;
     @FXML
     public TableView<Movie> allMoviesTableView;
     public ListView<Movie> songsInPlaylistListView;
-    public TableColumn playlistNameColumn;
+    public TableColumn<Movie,String> nameColumn;
+    public TableColumn<Movie,Integer> ratingColumn;
+    public TableColumn<Movie,Date> lastViewColumn;
+    public TableColumn<Movie,String> fileLinkColumn;
+    public TableColumn<Category,String> categoryColumn;
+    public MovieManager movieManager;
+    public CategoryManager categoryManager;
 
 
     @FXML
@@ -38,6 +46,8 @@ public class MainController implements Initializable
 
 
     public MainController() throws IOException {
+        movieManager = new MovieManager();
+        categoryManager = new CategoryManager();
     }
 
     @FXML
@@ -49,24 +59,6 @@ public class MainController implements Initializable
         stage.show();
         stage.setResizable(false);
     }
-    @FXML
-    public void playlistEditButtonAction(ActionEvent event) throws IOException {
-        /*
-        if (getSelectedPlaylist() == null)
-            return;
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("edit-playlist.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
-        Stage stage = new Stage();
-        stage.setScene(scene);
-        stage.show();
-        stage.setResizable(false);
-        PlaylistController playlistController = fxmlLoader.getController();
-        playlistController.setSelectedPlaylist(getSelectedPlaylist());
-        playlistController.setMainController(this);
-         */
-    }
-
-
     @FXML
     public void deleteButtonAction(ActionEvent event) throws IOException {
         /*
@@ -88,18 +80,6 @@ public class MainController implements Initializable
          */
     }
     @FXML
-    public void songEditButtonAction(ActionEvent event) throws IOException {
-        /*
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("AllMovies-edit.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
-        Stage stage = new Stage();
-        stage.setScene(scene);
-        stage.show();
-        stage.setResizable(false);
-
-         */
-    }
-    @FXML
     public void songNewButtonAction(ActionEvent event) throws IOException {
         String path = HelloApplication.class.getResource("/new-movie.fxml").getPath();
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/new-movie.fxml"));
@@ -117,49 +97,17 @@ public class MainController implements Initializable
 
     @FXML
     public void initializeTables() {
-        // TODO:
-    }
-
-    public void playlistDeleteButtonAction(ActionEvent actionEvent) throws IOException {
-        /*
-        if (getSelectedPlaylist() == null)
-            return;
-        FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("delete-playlist.fxml"));
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-        Stage stage = new Stage();
-        stage.setTitle("Delete Category?");
-        stage.setScene(scene);
-        stage.show();
-
-        PlaylistController playlistController = loader.getController();
-        playlistController.setSelectedPlaylist(getSelectedPlaylist());
-        playlistController.setMainController(this);
-
-         */
-    }
-
-    public void moveSongtoPlaylist(ActionEvent actionEvent) {
-        /*
-        if (getSelectedPlaylist() == null || getSelectedSong() == null)
-            return;
-        categoryManager.assignSong(getSelectedPlaylist(),getSelectedSong(),1);
-
-         */
-    }
-
-    public void removeSongButtonAction(ActionEvent actionEvent) {
-        /*
-        var selectedSong = songsInPlaylistListView.getSelectionModel().getSelectedItem();
-        if (selectedSong == null)
-            return;
-        categoryManager.removeSong(selectedSong.getPlaylistId(), selectedSong.getSongId());
-
-         */
+        nameColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getName()));
+        ratingColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getRating()));
+        lastViewColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getDate()));
+        fileLinkColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getFileLink()));
+        categoryColumn.setCellValueFactory(cellData -> new  ReadOnlyStringWrapper(cellData.getValue().getName()));
+        allMoviesTableView.setItems(FXCollections.observableList(movieManager.getAllMovies()));
+        categoryTableView.setItems(FXCollections.observableList(categoryManager.getAllCategories()));
     }
 
     public void addMovieToCategory(MouseEvent mouseEvent) {
-        Category selectedCategory = playlistsTableView.getSelectionModel().getSelectedItem();
+        Category selectedCategory = categoryTableView.getSelectionModel().getSelectedItem();
         Movie selectedMovie = allMoviesTableView.getSelectionModel().getSelectedItem();
         if (selectedCategory != null && selectedMovie != null) {
             MovieManager movieManager = null;
@@ -176,7 +124,7 @@ public class MainController implements Initializable
     }
 
     public void deletMovieInCategoryButtonAction(ActionEvent actionEvent) {
-        Category selectedCategory = playlistsTableView.getSelectionModel().getSelectedItem();
+        Category selectedCategory = categoryTableView.getSelectionModel().getSelectedItem();
         Movie selectedMovie = songsInPlaylistListView.getSelectionModel().getSelectedItem();
         if (selectedCategory != null && selectedMovie != null) {
             MovieManager movieManager = null;

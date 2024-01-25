@@ -18,7 +18,7 @@
       <TableView fx:id="allMoviesTableView" layoutX="600.0" layoutY="56.0" prefHeight="269.0" prefWidth="344.0" style="-fx-background-radius: 5; -fx-background-color: #F0F0F0;">
          <columns>
             <TableColumn fx:id="nameColumn" prefWidth="107.0" style="-fx-background-color: #F5F5DC;" text="Title" />
-            <TableColumn fx:id="ratingCollumn" prefWidth="82.0" style="-fx-background-color: F5F5DC;" text="Rating" />
+            <TableColumn fx:id="ratingColumn" prefWidth="82.0" style="-fx-background-color: F5F5DC;" text="Rating" />
             <TableColumn fx:id="lastViewColumn" minWidth="0.0" prefWidth="79.0" style="-fx-background-color: F5F5DC;" text="Last viewed" />
             <TableColumn fx:id="fileLinkColumn" minWidth="0.0" prefWidth="75.0" style="-fx-background-color: #F5F5DC;" text="File link" />
         </columns>
@@ -26,7 +26,7 @@
             <Cursor fx:constant="CLOSED_HAND" />
          </cursor>
       </TableView>
-      <TableView fx:id="categoriesTableView" layoutX="30.0" layoutY="56.0" prefHeight="269.0" prefWidth="279.0" style="-fx-background-radius: 5; -fx-background-color: #F0F0F0;">
+      <TableView fx:id="categoryTableView" layoutX="30.0" layoutY="56.0" prefHeight="269.0" prefWidth="279.0" style="-fx-background-radius: 5; -fx-background-color: #F0F0F0;">
          <columns>
             <TableColumn fx:id="categoryColumn" prefWidth="94.0" style="-fx-background-color: #F5F5DC;" text="Name" />
          </columns>
